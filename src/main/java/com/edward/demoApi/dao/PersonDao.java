@@ -3,6 +3,7 @@ package com.edward.demoApi.dao;
 import com.edward.demoApi.model.Person;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface PersonDao {
@@ -14,4 +15,10 @@ public interface PersonDao {
     }
 
     public List<Person> selectAllPeople();
+
+    int deletePersonById(UUID id);
+
+    int updatePerson(Person person);
+
+    Optional<Person> selectPersonById(UUID id);
 }

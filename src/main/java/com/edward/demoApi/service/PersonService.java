@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 //@service marks this as a service bean to be instantiated and injected into any class that needs it by spring
 //@Component can be used also, but service is more descriptive
@@ -28,5 +30,17 @@ public class PersonService {
 
     public List<Person> getAllPeople(){
         return personDao.selectAllPeople();
+    }
+
+    public Optional<Person> getPersonById(UUID id){
+        return personDao.selectPersonById(id);
+    }
+
+    public int deletePerson(UUID id){
+        return personDao.deletePersonById(id);
+    }
+
+    public int updatePerson(Person person){
+        return personDao.updatePerson(person);
     }
 }
