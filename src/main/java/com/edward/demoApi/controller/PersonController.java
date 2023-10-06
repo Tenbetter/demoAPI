@@ -1,9 +1,10 @@
 package com.edward.demoApi.controller;
 
-import com.edward.demoApi.dao.PersonDao;
 import com.edward.demoApi.model.Person;
-import com.edward.demoApi.service.PersonService;
+import com.edward.demoApi.service.IPersonService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,18 +15,19 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/person")
 public class PersonController {
-    private final PersonService personService;
+    private final IPersonService personService;
 
     //@Autowired annotation provides the spring instantiated PersonService to the constructor, This is dependency injection.
-    //In this instance @Qualifier is not required because there is only one PersonService and no interface
+    //In this instance @Qualifier is not required because there is only one PersonService
     @Autowired
-    public PersonController(PersonService personService) {
+    public PersonController(IPersonService personService) {
         this.personService = personService;
     }
 
     //@PostMapping annotation marks this out as a method that accepts post requests
+    //@Valid enforces validation that is defined in the model class
     @PostMapping("/add")
-    public void addPerson(@RequestBody Person person){
+    public void addPerson(@RequestBody @Valid @NonNull Person person){
         personService.addPerson(person);
     }
 
@@ -44,8 +46,9 @@ public class PersonController {
     public void deletePersonById(@PathVariable("id") UUID id){
         personService.deletePerson(id);
     }
+
     @PutMapping("/update")
-    public void updatePerson(@RequestBody Person person){
+    public void updatePerson(@RequestBody @Valid @NonNull Person person){
         personService.updatePerson(person);
     }
 }

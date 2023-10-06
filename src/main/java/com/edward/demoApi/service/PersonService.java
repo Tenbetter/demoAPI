@@ -1,6 +1,6 @@
 package com.edward.demoApi.service;
 
-import com.edward.demoApi.dao.PersonDao;
+import com.edward.demoApi.dao.IPersonDao;
 import com.edward.demoApi.model.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,14 +13,14 @@ import java.util.UUID;
 //@service marks this as a service bean to be instantiated and injected into any class that needs it by spring
 //@Component can be used also, but service is more descriptive
 @Service
-public class PersonService {
+public class PersonService implements IPersonService {
 
-    private final PersonDao personDao;
+    private final IPersonDao personDao;
 
     //@Autowired is used on constructors, setters and properties to inject dependencies
-    //@Qualifier is used to specify which implementation of an interface to use
+    //@Qualifier is used to specify which implementation of an interface to use when there is ambiguity
     @Autowired
-    public PersonService(@Qualifier("FakePersonDAO") PersonDao personDao) {
+    public PersonService(@Qualifier("FakePersonDAO") IPersonDao personDao) {
         this.personDao = personDao;
     }
 

@@ -1,11 +1,13 @@
 package com.edward.demoApi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.UUID;
 
 public class Person {
     private final UUID id;
+    @NotBlank
     private final String name;
 
     public Person(@JsonProperty("id") UUID id,

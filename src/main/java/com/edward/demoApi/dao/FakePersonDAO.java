@@ -11,7 +11,7 @@ import java.util.UUID;
 //@Repository annotation marks this out as a repository bean to be instantiated and injected into any class that needs it by spring
 //@Component can be used also, but @Repository is more descriptive
 @Repository("FakePersonDAO")
-public class FakePersonDAO implements PersonDao {
+public class FakePersonDAO implements IPersonDao {
 
     private static List<Person> DB = new ArrayList<>();
 
