@@ -20,7 +20,7 @@ public class PersonService implements IPersonService {
     //@Autowired is used on constructors, setters and properties to inject dependencies
     //@Qualifier is used to specify which implementation of an interface to use when there is ambiguity
     @Autowired
-    public PersonService(@Qualifier("FakePersonDAO") IPersonDao personDao) {
+    public PersonService(@Qualifier("sqlServer") IPersonDao personDao) {
         this.personDao = personDao;
     }
 

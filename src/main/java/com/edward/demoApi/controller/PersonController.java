@@ -30,7 +30,6 @@ public class PersonController {
     public void addPerson(@RequestBody @Valid @NonNull Person person){
         personService.addPerson(person);
     }
-
     //Adding path to the annotation appends to the controller level path
     @GetMapping("/all")
     public List<Person> getAllPeople(){
