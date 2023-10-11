@@ -3,7 +3,11 @@ package com.edward.demoApi.controller;
 import com.edward.demoApi.model.Person;
 import com.edward.demoApi.service.IPersonService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/person")
 public class PersonController {
+    Logger logger = LoggerFactory.getLogger(PersonController.class);
     private final IPersonService personService;
 
     //@Autowired annotation provides the spring instantiated PersonService to the constructor, This is dependency injection.
@@ -27,8 +32,14 @@ public class PersonController {
     //@PostMapping annotation marks this out as a method that accepts post requests
     //@Valid enforces validation that is defined in the model class
     @PostMapping("/add")
-    public void addPerson(@RequestBody @Valid @NonNull Person person){
-        personService.addPerson(person);
+    public ResponseEntity addPerson(@RequestBody @Valid @NonNull Person person){
+        try{
+            personService.addPerson(person);
+        }catch (Error e){
+            logger.info(e.toString());
+            return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);
+        }
+         return new ResponseEntity(HttpStatus.CREATED);
     }
     //Adding path to the annotation appends to the controller level path
     @GetMapping("/all")
