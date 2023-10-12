@@ -10,6 +10,6 @@ public interface IPersonService {
     int addPerson(Person person);
     List<Person> getAllPeople();
     Optional<Person> getPersonById(UUID id);
-    int deletePerson(UUID id);
-    int updatePerson(Person person);
+    void deletePerson(UUID id);
+    void updatePerson(Person person);
 }

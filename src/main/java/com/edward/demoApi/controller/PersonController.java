@@ -3,11 +3,16 @@ package com.edward.demoApi.controller;
 import com.edward.demoApi.model.Person;
 import com.edward.demoApi.service.IPersonService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 //@RestController annotation marks this out as a bean for creation by spring
@@ -15,6 +20,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/person")
 public class PersonController {
+    Logger logger = LoggerFactory.getLogger(PersonController.class);
     private final IPersonService personService;
 
     //@Autowired annotation provides the spring instantiated PersonService to the constructor, This is dependency injection.
@@ -27,27 +33,49 @@ public class PersonController {
     //@PostMapping annotation marks this out as a method that accepts post requests
     //@Valid enforces validation that is defined in the model class
     @PostMapping("/add")
-    public void addPerson(@RequestBody @Valid @NonNull Person person){
-        personService.addPerson(person);
+    public ResponseEntity addPerson(@RequestBody @Valid @NonNull Person person){
+        try{
+            personService.addPerson(person);
+        }catch (Error e){
+            logger.info(e.toString());
+            return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);
+        }
+         return new ResponseEntity(HttpStatus.CREATED);
     }
     //Adding path to the annotation appends to the controller level path
     @GetMapping("/all")
-    public List<Person> getAllPeople(){
-        return personService.getAllPeople();
+    public ResponseEntity <List<Person>> getAllPeople(){
+        return ResponseEntity.ok(personService.getAllPeople());
     }
 
     @GetMapping(path ="{id}")
-    public Person getPersonById(@PathVariable("id") UUID id){
-        return personService.getPersonById(id).orElse(null);
+    public ResponseEntity<Person> getPersonById(@PathVariable("id") UUID id){
+        Optional<Person> personOptional = personService.getPersonById(id);
+//        if(personOptional.isPresent()){
+//            return ResponseEntity.of(personOptional);
+//        }
+
+        return ResponseEntity.of(personOptional);
     }
 
     @DeleteMapping(path = "/delete/{id}")
-    public void deletePersonById(@PathVariable("id") UUID id){
-        personService.deletePerson(id);
+    public ResponseEntity deletePersonById(@PathVariable("id") UUID id){
+        try {
+            personService.deletePerson(id);
+            return new ResponseEntity("Deleted", HttpStatus.OK);
+        }
+        catch(Exception e) {
+            return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/update")
-    public void updatePerson(@RequestBody @Valid @NonNull Person person){
-        personService.updatePerson(person);
+    public ResponseEntity updatePerson(@RequestBody @Valid @NonNull Person person){
+        try {
+            personService.updatePerson(person);
+            return new ResponseEntity("Updated", HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
