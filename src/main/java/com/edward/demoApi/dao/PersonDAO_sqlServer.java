@@ -1,13 +1,14 @@
 package com.edward.demoApi.dao;
 
 import com.edward.demoApi.model.Person;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,6 +44,8 @@ public class PersonDAO_sqlServer implements IPersonDao{
 
     @Override
     public int deletePersonById(UUID id) {
+        String sql = "SELECT * FROM person";
+
         return 0;
     }
 
@@ -53,7 +56,11 @@ public class PersonDAO_sqlServer implements IPersonDao{
 
     @Override
     public Optional<Person> selectPersonById(UUID id) {
-        String sql = "SELECT * FROM person WHERE";
-        return Optional.empty();
+        String sql = "SELECT id, name FROM person WHERE id = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, BeanPropertyRowMapper.newInstance(Person.class),id));
     }
+
+
+
+
 }

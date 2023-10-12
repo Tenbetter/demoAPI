@@ -13,7 +13,7 @@ import java.util.UUID;
 //@service marks this as a service bean to be instantiated and injected into any class that needs it by spring
 //@Component can be used also, but service is more descriptive
 @Service
-public class PersonService implements IPersonService {
+public class PersonService implements IPersonService{
 
     private final IPersonDao personDao;
 
@@ -33,14 +33,23 @@ public class PersonService implements IPersonService {
     }
 
     public Optional<Person> getPersonById(UUID id){
-        return personDao.selectPersonById(id);
+        if(personDao.selectPersonById(id).isPresent()) {
+            return personDao.selectPersonById(id);
+        }else{
+            return Optional.empty();
+        }
     }
 
-    public int deletePerson(UUID id){
-        return personDao.deletePersonById(id);
+    public void deletePerson(UUID id){
+        if(personDao.selectPersonById(id).isPresent()){
+            personDao.deletePersonById(id);
+        }//else throw not found exception?
     }
 
-    public int updatePerson(Person person){
-        return personDao.updatePerson(person);
+    public void updatePerson(Person person){
+        if(personDao.selectPersonById(person.getId()).isPresent()){
+            personDao.updatePerson(person);
+        }//else throw not found exception?
+
     }
 }
