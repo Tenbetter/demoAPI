@@ -43,15 +43,15 @@ public class PersonDAO_sqlServer implements IPersonDao{
     }
 
     @Override
-    public int deletePersonById(UUID id) {
-        String sql = "SELECT * FROM person";
-
-        return 0;
+    public void deletePersonById(UUID id) {
+        String sql = "DELETE FROM person WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
-    public int updatePerson(Person person) {
-        return 0;
+    public void updatePerson(Person person) {
+        String sql = "UPDATE person SET name = ? WHERE id = ?";
+        jdbcTemplate.update(sql, person.getName(), person.getId());
     }
 
     @Override

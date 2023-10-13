@@ -26,25 +26,25 @@ public class FakePersonDAO implements IPersonDao {
         return DB;
     }
 
-    public int deletePersonById(UUID id){
+    public void deletePersonById(UUID id){
       Optional<Person> personOptional = selectPersonById(id);
       if(personOptional.isEmpty()){
-          return 0;
+         //throw error
       }
       DB.remove(personOptional.get());
-        return 1;
+
     }
 
     @Override
-    public int updatePerson(Person person) {
+    public void updatePerson(Person person) {
         List<Person> people = selectAllPeople();
         Optional<Person> personOptional = people.stream().filter(p->p.getId().equals(person.getId())).findFirst();
         if(personOptional.isEmpty()){
-            return 0;
+            //throw error
         }
         int index = DB.indexOf(personOptional.get());
         DB.set(index, person);
-        return 1;
+
     }
 
     @Override
