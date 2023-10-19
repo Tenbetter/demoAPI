@@ -1,6 +1,5 @@
-package com.edward.demoApi;
+package com.edward.demoApi.controller;
 
-import com.edward.demoApi.controller.PersonController;
 import com.edward.demoApi.model.Person;
 import com.edward.demoApi.service.IPersonService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,10 +19,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PersonController.class)
@@ -36,47 +34,72 @@ public class PersonControllerTests {
 
     @Test
     void addPerson_returns_ResponseEntity(){
-        //Given
         PersonController personController = new PersonController(mockPersonservice);
-        //When
-        when(mockPersonservice.addPerson(any())).thenReturn(1);
-        //Then
-        Assert.isInstanceOf(ResponseEntity.class, personController.addPerson(new Person(UUID.randomUUID(),"Ed")));
-        assertThat(personController.addPerson(new Person(UUID.randomUUID(),"Ed")).getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        Person testPerson = new Person("Ed");
+        Assert.isInstanceOf(ResponseEntity.class, personController.addPerson(testPerson));
+        assertThat(personController.addPerson(testPerson).getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        verify(mockPersonservice, times(2)).addPerson(testPerson);
     }
     @Test
-    void addPerson_returns_ResponseEntity_with_status_400_when_request_is_bad(){
-
+    void addPerson_returns_ResponseEntity_with_status_400_when_request_is_bad() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/person/add")
+                .content(asJsonString(new Person()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void addPerson_returns_ResponseEntity_with_status_500_when_DB_connection_is_broken(){
-
+    void addPerson_returns_ResponseEntity_with_status_201_when_person_is_added() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/person/add")
+                        .content(asJsonString(new Person("Ed")))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(status().is(201));
     }
+
     @Test
     void updatePerson_returns_ResponseEntity(){
         PersonController personController = new PersonController(mockPersonservice);
-        Assert.isInstanceOf(ResponseEntity.class,personController.updatePerson(new Person(UUID.randomUUID(),"ED")) );
-        assertThat(personController.updatePerson(new Person(UUID.randomUUID(),"ED")).getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assert.isInstanceOf(ResponseEntity.class,personController.updatePerson(new Person("ED")) );
+        assertThat(personController.updatePerson(new Person("ED")).getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @Test
+    void updatePerson_returns_ResponseEntity_with_status_201_when_person_is_updated() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/person/update")
+                        .content(asJsonString(new Person(UUID.randomUUID(),"Ed")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andExpect(status().isCreated())
+                .andExpect(status().is(201));
     }
 
     @Test
     void getAllPeople_returns_ResponseEntity(){
-        //Given
+
         PersonController personController = new PersonController(mockPersonservice);
         List<Person> returnedList = new ArrayList<>();
-        returnedList.add(new Person(UUID.randomUUID(), "ED"));
-        //When
+        returnedList.add(new Person("ED"));
         when(mockPersonservice.getAllPeople()).thenReturn(returnedList);
-        //Then
         Assert.isInstanceOf(ResponseEntity.class, personController.getAllPeople());
         assertThat(personController.getAllPeople().getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
+    @Test
+    void getAllPeople_returns_ResponseEntity_with_status_200() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/person/all")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(status().is(200));
+    }
+
+
     @Test
     void getPersonById_returns_ResponseEntity(){
         //Given
         PersonController personController = new PersonController(mockPersonservice);
-        Person person = new Person(UUID.randomUUID(),"ED");
+        Person person = new Person("ED");
         //When
         when(mockPersonservice.getPersonById(person.getId())).thenReturn(Optional.of(person));
         //Then
@@ -92,36 +115,13 @@ public class PersonControllerTests {
     }
 
     @Test
-    void deletePersonById_returns_ResponseEntity_with_status_404_if_person_not_in_db(){
-
-    }
-
-    @Test
-    void deletePersonById_returns_ResponseEntity_with_status_500_if_DB_connection_broken(){
-
-    }
-
-
-    @Test
     void AddPerson_returns_created201_when_person_created_successfully()throws Exception{
-        mockMvc.perform( MockMvcRequestBuilders
-                .post("/person/add")
-                .content(asJsonString(new Person(UUID.randomUUID(),"Ed")))
+        mockMvc.perform( post("/person/add")
+                .content(asJsonString(new Person("Ed")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
     }
 
-
-
-    @Test
-    void AddPerson_returns_unavaliable500_when_person_cannot_be_created(){
-
-    }
-
-    @Test
-    void AddPerson_returns_badrequest_when_request_is_bad(){
-
-    }
     
     public static String asJsonString(final Object obj) {
         try {

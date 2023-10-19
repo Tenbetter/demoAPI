@@ -12,7 +12,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 //@RestController annotation marks this out as a bean for creation by spring
@@ -34,48 +33,30 @@ public class PersonController {
     //@Valid enforces validation that is defined in the model class
     @PostMapping("/add")
     public ResponseEntity addPerson(@RequestBody @Valid @NonNull Person person){
-        try{
-            personService.addPerson(person);
-        }catch (Error e){
-            logger.info(e.toString());
-            return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);
-        }
-         return new ResponseEntity(HttpStatus.CREATED);
+        personService.addPerson(person);
+        return new ResponseEntity("Created",HttpStatus.CREATED);
     }
     //Adding path to the annotation appends to the controller level path
     @GetMapping("/all")
     public ResponseEntity <List<Person>> getAllPeople(){
-        return ResponseEntity.ok(personService.getAllPeople());
+            return ResponseEntity.ok(personService.getAllPeople());
     }
 
     @GetMapping(path ="{id}")
-    public ResponseEntity<Person> getPersonById(@PathVariable("id") UUID id){
-        Optional<Person> personOptional = personService.getPersonById(id);
-//        if(personOptional.isPresent()){
-//            return ResponseEntity.of(personOptional);
-//        }
-
-        return ResponseEntity.of(personOptional);
+    public ResponseEntity<Person> getPersonById(@PathVariable("id") UUID id) {
+            ResponseEntity response = ResponseEntity.ofNullable(personService.getPersonById(id));
+            return response;
     }
 
     @DeleteMapping(path = "/delete/{id}")
     public ResponseEntity deletePersonById(@PathVariable("id") UUID id){
-        try {
             personService.deletePerson(id);
             return new ResponseEntity("Deleted", HttpStatus.OK);
-        }
-        catch(Exception e) {
-            return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
-    @PutMapping("/update")
-    public ResponseEntity updatePerson(@RequestBody @Valid @NonNull Person person){
-        try {
-            personService.updatePerson(person);
-            return new ResponseEntity("Updated", HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PutMapping(path = "/update" )
+    public ResponseEntity updatePerson(@RequestBody Person person) {
+        personService.updatePerson(person);
+        return new ResponseEntity("Updated", HttpStatus.CREATED);
     }
 }
