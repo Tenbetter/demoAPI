@@ -24,32 +24,24 @@ public class PersonService implements IPersonService{
         this.personDao = personDao;
     }
 
-    public int addPerson(Person person){
-        return personDao.insertPerson(person);
+    public void addPerson(Person person){
+         personDao.insertPerson(person);
     }
 
-    public List<Person> getAllPeople(){
+    public List<Person> getAllPeople() {
         return personDao.selectAllPeople();
     }
 
-    public Optional<Person> getPersonById(UUID id){
-        if(personDao.selectPersonById(id).isPresent()) {
-            return personDao.selectPersonById(id);
-        }else{
-            return Optional.empty();
-        }
+    public Optional<Person> getPersonById(UUID id) {
+            return Optional.ofNullable(personDao.selectPersonById(id));
     }
 
     public void deletePerson(UUID id){
-        if(personDao.selectPersonById(id).isPresent()){
             personDao.deletePersonById(id);
-        }//else throw not found exception?
     }
 
     public void updatePerson(Person person){
-        if(personDao.selectPersonById(person.getId()).isPresent()){
             personDao.updatePerson(person);
-        }//else throw not found exception?
 
     }
 }

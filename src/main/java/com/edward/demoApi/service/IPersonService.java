@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface IPersonService {
-    int addPerson(Person person);
+    void addPerson(Person person);
     List<Person> getAllPeople();
     Optional<Person> getPersonById(UUID id);
     void deletePerson(UUID id);
